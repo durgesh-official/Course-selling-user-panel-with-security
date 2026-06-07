@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Panel | Fixed & Secured</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hidden { display: none; }
+        .tab-content { display: none; }
+        .active-tab { display: block; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .sidebar-item.active { background: #2563eb; color: white; border-radius: 12px; }
+        .whatsapp-float { position: fixed; bottom: 25px; right: 25px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; items-center; justify-content: center; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); z-index: 99; transition: all 0.3s ease; }
+        .whatsapp-float:hover { transform: scale(1.1) rotate(10deg); }
+    </style>
+</head>
+<body class="bg-slate-50 h-screen overflow-hidden">
+
+    <!-- WhatsApp Floating Chat -->
+    <a href="#" id="adminWA" target="_blank" class="whatsapp-float">
+        <i data-lucide="message-circle" class="w-8 h-8"></i>
+    </a>
+
+    <!-- 1. LOGIN SCREEN -->
+    <div id="auth-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100]">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-[90%] max-w-md text-center border border-slate-100">
+            <div class="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-blue-600">
+                <i data-lucide="shield-check" class="w-10 h-10"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-slate-800 mb-2">User Login</h1>
+            <p class="text-slate-400 text-sm mb-8">Registered naam enter karke access karein.</p>
+            
+            <div class="space-y-4">
+                <input type="text" id="loginName" placeholder="Enter Full Name" 
+                    class="w-full border-2 border-slate-100 p-4 rounded-2xl outline-none focus:border-blue-500 transition text-center font-bold text-slate-700">
+                <button onclick="handleLogin()" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-xl shadow-blue-200">
+                    Login to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN DASHBOARD -->
+    <div id="dashboard" class="hidden flex h-full">
+        
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-72 bg-white border-r z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+            <div class="p-6 border-b flex items-center justify-between">
+                <span class="text-xl font-bold text-blue-600 flex items-center gap-2">
+                    <i data-lucide="layout-grid"></i> UserPanel
+                </span>
+                <button onclick="toggleMenu()" class="lg:hidden text-slate-400 p-2"><i data-lucide="x"></i></button>
+            </div>
+            
+            <nav class="p-4 flex-1 space-y-2">
+                <button onclick="switchTab('prod-view', this)" class="sidebar-item active w-full flex items-center gap-3 p-4 font-bold transition text-slate-600">
+                    <i data-lucide="files"></i> Resources
+                </button>
+                <button onclick="switchTab('notif-view', this)" class="sidebar-item w-full flex items-center gap-3 p-4 font-bold transition text-slate-600 hover:bg-slate-50">
+                    <i data-lucide="bell"></i> Notifications
+                </button>
+            </nav>
+
+            <div class="p-6 border-t">
+                <button onclick="handleLogout()" class="w-full flex items-center gap-3 p-4 rounded-2xl font-bold text-red-500 hover:bg-red-50 transition">
+                    <i data-lucide="log-out"></i> Logout Account
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN AREA -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <header class="h-20 bg-white/80 backdrop-blur-md border-b px-6 flex items-center justify-between sticky top-0 z-40">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleMenu()" class="lg:hidden p-2 bg-slate-100 rounded-xl text-slate-600"><i data-lucide="menu"></i></button>
+                    <h2 id="header-title" class="font-bold text-slate-800 tracking-tight">Available Resources</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:block text-right">
+                        <p id="uDisplayName" class="text-sm font-bold text-slate-800 leading-none">User</p>
+                        <span class="text-[10px] font-bold text-green-500 uppercase">Online</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-white shadow-sm">U</div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-4 lg:p-8">
+                <!-- PRODUCTS VIEW -->
+                <div id="prod-view" class="tab-content active-tab">
+                    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                        <!-- Products will be injected here -->
+                    </div>
+                </div>
+
+                <!-- NOTIFICATIONS VIEW -->
+                <div id="notif-view" class="tab-content">
+                    <div id="notifList" class="max-w-2xl mx-auto space-y-4">
+                        <!-- Notifications will be injected here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULES -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 🔥 Replace with your actual Firebase Config
+        const firebaseConfig = {
+            apiKey: "your",
+            authDomain: "your",
+            databaseURL: "your",
+            projectId: "your",
+            storageBucket: "your",
+            messagingSenderId: "your",
+            appId: "your",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- APP SETTINGS ---
+        const ADMIN_PHONE = "919999999999"; // Change to your number
+        document.getElementById('adminWA').href = `https://wa.me/${ADMIN_PHONE}?text=Hello Admin, I need assistance.`;
+
+        // --- BACK BUTTON & SESSION FIX ---
+        window.addEventListener('load', () => {
+            const savedUser = localStorage.getItem('user_session');
+            if (savedUser) {
+                checkUserStatus(savedUser);
+            }
+        });
+
+        // Handle browser back button
+        window.onpopstate = function(event) {
+            const savedUser = localStorage.getItem('user_session');
+            if (savedUser && document.getElementById('dashboard').classList.contains('hidden')) {
+                history.pushState(null, null, window.location.href);
+            }
+        };
+
+        // --- AUTH LOGIC ---
+        window.handleLogin = () => {
+            const name = document.getElementById('loginName').value.trim();
+            if(!name) return alert("Please enter your name.");
+            checkUserStatus(name);
+        };
+
+        function checkUserStatus(name) {
+            const q = query(collection(db, "users"), where("name", "==", name));
+            onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    alert("Aapka naam list me nahi hai.");
+                    handleLogout();
+                    return;
+                }
+                const userData = snapshot.docs[0].data();
+                if (userData.isBlocked || userData.isDeleted) {
+                    alert("Account Blocked or Deleted!");
+                    handleLogout();
+                } else {
+                    localStorage.setItem('user_session', name);
+                    document.getElementById('auth-screen').classList.add('hidden');
+                    document.getElementById('dashboard').classList.remove('hidden');
+                    document.getElementById('uDisplayName').innerText = name;
+                    
+                    // Update history to prevent back to login
+                    history.pushState({ loggedIn: true }, null, "");
+                    startRealtimeSync();
+                }
+            });
+        }
+
+        window.handleLogout = () => {
+            localStorage.removeItem('user_session');
+            location.reload();
+        };
+
+        // --- NAVIGATION ---
+        window.toggleMenu = () => document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        window.switchTab = (id, btn) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+            document.getElementById(id).classList.add('active-tab');
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('header-title').innerText = btn.innerText;
+            if(window.innerWidth < 1024) toggleMenu();
+        };
+
+        // --- DRIVE URL HELPER ---
+        const getDriveLink = (url, isDownload = false) => {
+            if(!url) return "";
+            const match = url.match(/[-\w]{25,}/);
+            if (match && (url.includes('drive.google.com') || url.includes('google.com'))) {
+                const id = match[0];
+                return isDownload 
+                    ? `https://drive.google.com/uc?export=download&id=${id}` 
+                    : `https://lh3.googleusercontent.com/d/${id}`;
+            }
+            return url;
+        };
+
+        // --- WHATSAPP LOGIC ---
+        window.shareProduct = (title, url) => {
+            const msg = encodeURIComponent(`👋 Hey! Check out this: *${title}*\n\nGet it here: ${url}`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        };
+
+        window.buyProduct = (title, price) => {
+            const msg = encodeURIComponent(`Hello Admin, I want to purchase *${title}* for ₹${price}. Please send payment details.`);
+            window.open(`https://wa.me/${ADMIN_PHONE}?text=${msg}`, '_blank');
+        };
+
+        // --- DATA SYNC ---
+        function startRealtimeSync() {
+            // Products
+            onSnapshot(query(collection(db, "products"), orderBy("ts", "desc")), (snap) => {
+                const grid = document.getElementById('productGrid');
+                grid.innerHTML = '';
+                snap.forEach(d => {
+                    const p = d.data();
+                    const isPaid = p.status === 'paid';
+                    const imgUrl = getDriveLink(p.imgUrl);
+                    
+                    grid.innerHTML += `
+                    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col group hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500">
+                        <div class="h-44 bg-slate-100 relative overflow-hidden">
+                            <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://placehold.co/400x300?text=No+Preview'">
+                            <div class="absolute top-4 right-4 flex gap-2">
+                                <button onclick="shareProduct('${p.title}', '${p.fileUrl}')" class="bg-white/90 backdrop-blur p-2 rounded-full shadow-lg text-green-600 hover:bg-green-600 hover:text-white transition-all">
+                                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-4 left-4 flex gap-2">
+                                <span class="bg-black/60 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-widest">${p.type}</span>
+                                ${isPaid ? `<span class="bg-red-500 px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-widest">₹${p.price}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="mb-5 flex-1">
+                                <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">${p.cat}</p>
+                                <h3 class="font-bold text-slate-800 leading-tight truncate">${p.title}</h3>
+                                <p class="text-xs text-slate-400 mt-2 line-clamp-2">${p.desc || 'No description available.'}</p>
+                            </div>
+                            
+                            ${isPaid ? 
+                                `<button onclick="buyProduct('${p.title}', '${p.price}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-100">
+                                    <i data-lucide="shopping-cart" class="w-4 h-4"></i> Buy on WhatsApp
+                                </button>` : 
+                                `<a href="${getDriveLink(p.fileUrl, true)}" target="_blank" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-blue-100 text-center">
+                                    <i data-lucide="download-cloud" class="w-4 h-4"></i> Download Now
+                                </a>`
+                            }
+                        </div>
+                    </div>`;
+                });
+                lucide.createIcons();
+            });
+
+            // Notifications
+            onSnapshot(query(collection(db, "notifications"), orderBy("ts", "desc")), (snap) => {
+                const list = document.getElementById('notifList');
+                list.innerHTML = '';
+                snap.forEach(d => {
+                    const n = d.data();
+                    list.innerHTML += `
+                        <div class="bg-white p-6 rounded-[2rem] border-l-[6px] border-blue-600 shadow-sm">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-slate-800 text-lg">${n.title}</h4>
+                                <i data-lucide="bell" class="w-4 h-4 text-blue-200"></i>
+                            </div>
+                            <p class="text-slate-500 text-sm leading-relaxed">${n.message}</p>
+                        </div>`;
+                });
+                lucide.createIcons();
+            });
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
